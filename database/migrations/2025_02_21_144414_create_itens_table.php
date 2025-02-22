@@ -18,10 +18,11 @@ return new class extends Migration
             $table->string('unidade_medida');
             $table->date('data_limite');
             $table->text('observacoes')->nullable();
-            $table->integer('chamada_id')->unsigned()->nullable();
-            $table->foreign('chamada_id')->references('id')->on('chamadas');
+           
+
             $table->integer('escola_id')->unsigned()->nullable();
             $table->foreign('escola_id')->references('id')->on('escolas');
+
             $table->bigInteger('user_id')->unsigned()->nullable();
             $table->foreign('user_id')->references('id')->on('users');
             $table->timestamps();

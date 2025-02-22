@@ -3,63 +3,83 @@
 namespace App\Http\Controllers;
 
 use App\Models\Cardapio;
+use App\Models\Alimento;
+use App\Models\Escola;
+use App\Models\Chamada;
 use Illuminate\Http\Request;
 
 class CardapioController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    // Exibe a lista de cardápios
     public function index()
     {
-        //
+        $cardapios = Cardapio::all();
+        return view('cardapios.index', compact('cardapios'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
+    // Exibe o formulário de criação de cardápio
     public function create()
     {
-        //
+        $alimentos = Alimento::all(); // Lista de alimentos disponíveis
+        $escolas = Escola::all(); // Lista de escolas
+        return view('cardapios.create', compact('alimentos', 'escolas'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
+    // Armazena um novo cardápio no banco de dados
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'nome' => 'required|string|max:255',
+            'quantidade_porcao_gr' => 'nullable|numeric',
+            'quantidade_kg' => 'nullable|numeric',
+            'dias_servido' => 'nullable|numeric',
+            'alimento_id' => 'nullable|exists:alimentos,id',
+            'escola_id' => 'nullable|exists:escolas,id',
+        ]);
+
+        Cardapio::create($request->all());
+
+        return redirect()->route('cardapios.index')
+                         ->with('success', 'Cardápio criado com sucesso!');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Cardapio $cardapio)
+    // Exibe o formulário de edição de cardápio
+    public function edit($id)
     {
-        //
+        $cardapio = Cardapio::find($id);
+        $alimentos = Alimento::all();
+        $escolas = Escola::all();
+        $chamadas = Chamada::all();
+        return view('cardapios.edit', compact('cardapio', 'alimentos', 'escolas', 'chamadas'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Cardapio $cardapio)
+    // Atualiza um cardápio existente
+    public function update(Request $request, $id)
     {
-        //
+        $request->validate([
+            'nome' => 'required|string|max:255',
+            'quantidade_porcao_gr' => 'nullable|numeric',
+            'quantidade_kg' => 'nullable|numeric',
+            'dias_servido' => 'nullable|numeric',
+            'chamada_id' => 'nullable|exists:chamadas,id',
+            'alimento_id' => 'nullable|exists:alimentos,id',
+            'escola_id' => 'nullable|exists:escolas,id',
+        ]);
+
+        $cardapio = Cardapio::find($id);
+        $cardapio->update($request->all());
+
+        return redirect()->route('cardapios.index')
+                         ->with('success', 'Cardápio atualizado com sucesso!');
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Cardapio $cardapio)
+    // Exclui um cardápio
+    public function destroy($id)
     {
-        //
-    }
+        $cardapio = Cardapio::find($id);
+        $cardapio->delete();
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Cardapio $cardapio)
-    {
-        //
+        return redirect()->route('cardapios.index')
+                         ->with('success', 'Cardápio excluído com sucesso!');
     }
 }

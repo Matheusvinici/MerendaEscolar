@@ -2,24 +2,34 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Cardapio extends Model
 {
-    protected $table = 'cardapios';
+    use HasFactory;
 
-    public function chamada()
+    // Campos que podem ser preenchidos em massa
+    protected $fillable = [
+        'nome',
+        'quantidade_porcao_gr',
+        'quantidade_kg',
+        'dias_servido',
+        'alimento_id',
+        'escola_id',
+    ];
+
+    // Relacionamento com a escola
+    public function escola()
     {
-        return $this->belongsTo(Chamada::class, 'chamada_id');
+        return $this->belongsTo(Escola::class, 'escola_id');
     }
 
+    // Relacionamento com o alimento
     public function alimento()
     {
         return $this->belongsTo(Alimento::class, 'alimento_id');
     }
 
-    public function pedidos()
-    {
-        return $this->hasMany(Pedido::class, 'cardapio_id');
-    }
+  
 }

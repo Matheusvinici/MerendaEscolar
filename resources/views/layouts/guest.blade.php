@@ -3,7 +3,12 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ config('app.name', 'Laravel') }}</title>
+    <title>{{ config('app.name', 'Sistema de Merenda - Seduc') }}</title>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet" />
+
+    <!-- Inclua o JS do Select2 -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
 
     <!-- Google Font: Source Sans Pro -->
     <link rel="stylesheet"
@@ -17,10 +22,15 @@
 </head>
 <body class="hold-transition login-page">
 <div class="login-box">
-    <div class="login-logo">
-        <a href="/">{{ config('app.name', 'Laravel') }}</a>
+    <!-- Adicione a imagem aqui -->
+    <div class="login-logo text-center">
+        <img src="https://www.juazeiro.ba.gov.br/wp-content/uploads/2021/11/horizontalazul.png" 
+             alt="Logo da Prefeitura de Juazeiro" 
+             style="max-width: 100%; height: auto; margin-bottom: 20px;">
     </div>
     <!-- /.login-logo -->
+
+    <!-- Card com o conteúdo de login/cadastro -->
     <div class="card">
         @yield('content')
     </div>

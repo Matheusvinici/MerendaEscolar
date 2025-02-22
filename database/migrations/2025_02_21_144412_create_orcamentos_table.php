@@ -12,13 +12,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('orcamentos', function (Blueprint $table) {
-            $table->increments('id');
-            $table->string('modalidade_ensino')->nullable();
-            $table->integer('alunos_senso')->nullable();
-            $table->integer('dias_letivos')->nullable();
-            $table->integer('valor_dia_aluno')->nullable();
-            $table->float('valor_total')->nullable();
-            $table->timestamps();
+            $table->bigIncrements('id'); // Alterado de increments() para bigIncrements()
+            $table->string('descricao');
+            $table->decimal('total_estimado', 10, 2)->default(0);
+                $table->timestamps();
         });
     }
 

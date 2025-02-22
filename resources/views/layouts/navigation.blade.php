@@ -1,62 +1,92 @@
-<!-- Sidebar -->
-<div class="sidebar">
-    <!-- Sidebar user panel (optional) -->
-    <div class="user-panel mt-3 pb-3 mb-3 d-flex">
-        <div class="info">
-            <a href="{{ route('profile.show') }}" class="d-block">{{ Auth::user()->name }}</a>
-        </div>
-    </div>
 
-    <!-- Sidebar Menu -->
-    <nav class="mt-2">
-        <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu"
-            data-accordion="false">
-            <li class="nav-item">
-                <a href="{{ route('home') }}" class="nav-link">
-                    <i class="nav-icon fas fa-th"></i>
-                    <p>
-                        {{ __('Dashboard') }}
-                    </p>
-                </a>
-            </li>
+<!-- Sidebar Menu -->
+<nav class="mt-2">
+    <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
 
-            <li class="nav-item">
-                <a href="{{ route('users.index') }}" class="nav-link">
-                    <i class="nav-icon fas fa-users"></i>
-                    <p>
-                        {{ __('Users') }}
-                    </p>
-                </a>
-            </li>
+        <!-- Painel Inicial - Acesso para formador, user comum e admin -->
+        <li class="nav-item">
+            <a href="{{ route('home') }}" class="nav-link text-white">
+                <i class="nav-icon fas fa-tachometer-alt text-white"></i>
+                <p>{{ __('Painel Inicial') }}</p>
+            </a>
+        </li>
 
-            <li class="nav-item">
-                <a href="{{ route('about') }}" class="nav-link">
-                    <i class="nav-icon far fa-address-card"></i>
-                    <p>
-                        {{ __('About us') }}
-                    </p>
-                </a>
-            </li>
+        <!-- Opção: Servidores - Apenas para admin -->
+        <li class="nav-item">
+            <a href="{{ route('users.index') }}" class="nav-link text-white">
+                <i class="nav-icon fas fa-users text-white"></i>
+                <p>{{ __('Servidores') }}</p>
+            </a>
+        </li>
 
-            <li class="nav-item">
-                <a href="#" class="nav-link">
-                    <i class="nav-icon fas fa-circle nav-icon"></i>
-                    <p>
-                        Two-level menu
-                        <i class="fas fa-angle-left right"></i>
-                    </p>
-                </a>
-                <ul class="nav nav-treeview" style="display: none;">
-                    <li class="nav-item">
-                        <a href="#" class="nav-link">
-                            <i class="far fa-circle nav-icon"></i>
-                            <p>Child menu</p>
-                        </a>
-                    </li>
-                </ul>
-            </li>
-        </ul>
-    </nav>
-    <!-- /.sidebar-menu -->
-</div>
-<!-- /.sidebar -->
+        <li class="nav-item">
+            <a href="{{ route('alimentos.index') }}" class="nav-link text-white">
+                <i class="nav-icon fas fa-book text-white"></i>
+                <p>{{ __('Alimentos') }}</p>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a href="{{ route('orcamentos.index') }}" class="nav-link text-white">
+                <i class="nav-icon fas fa-book text-white"></i>
+                <p>{{ __('Orçamento') }}</p>
+            </a>
+        </li>
+<!-- 
+       Opção: Inscrições - Apenas para admin e usuário comum 
+        @if(Auth::user()->role == 'admin' || Auth::user()->role == 'user')
+        <li class="nav-item">
+            <a href="{{ route('inscricoes.index') }}" class="nav-link text-white">
+                <i class="nav-icon fas fa-edit text-white"></i>
+                <p>{{ __('Inscrições') }}</p>
+            </a>
+        </li>
+        @endif
+
+        Opção: Certificados - Apenas para admin e usuário comum (com título alterado) 
+        @if(Auth::user()->role == 'admin' || Auth::user()->role == 'user')
+        <li class="nav-item">
+            <a href="{{ route('certificados.index') }}" class="nav-link text-white">
+                <i class="nav-icon fas fa-file-alt text-white"></i>
+                <p>
+                    @if(Auth::user()->role == 'admin')
+                        {{ __('Certificados') }}
+                    @else
+                        {{ __('Meus Certificados') }}
+                    @endif
+                </p>
+            </a>
+        </li>
+        @endif
+
+        Opção: Formadores - Apenas para admin e formadores 
+        @if(Auth::user()->role == 'admin' || Auth::user()->role == 'formador')
+        <li class="nav-item">
+            <a href="{{ route('formador.index') }}" class="nav-link text-white">
+                <i class="nav-icon fas fa-chalkboard-teacher text-white"></i>
+                <p>{{ __('Formadores') }}</p>
+            </a>
+        </li>
+        @endif
+
+         Opção: Relatórios de Frequência - Apenas para admin e formadores 
+        @if(Auth::user()->role == 'admin' || Auth::user()->role == 'formador')
+        <li class="nav-item">
+            <a href="{{ route('relatorios.frequencia') }}" class="nav-link text-white">
+                <i class="nav-icon fas fa-chart-bar text-white"></i>
+                <p>{{ __('Relatórios de Frequência') }}</p>
+            </a>
+        </li>
+        @endif
+        -->
+        <!-- About Us - Acesso para todos -->
+        <li class="nav-item">
+            <a href="{{ route('about') }}" class="nav-link text-white">
+                <i class="nav-icon far fa-address-card text-white"></i>
+                <p>{{ __('Sobre Nós') }}</p>
+            </a>
+        </li>
+
+    </ul>
+</nav>
+<!-- /.sidebar-menu -->
