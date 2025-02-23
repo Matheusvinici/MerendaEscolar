@@ -1,56 +1,39 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container bg-light p-4 rounded">
-    <h1 class="text-primary mb-4">Cadastrar Novo Alimento</h1>
-
+<div class="container">
+    <h2>Cadastrar Alimento</h2>
     <form action="{{ route('alimentos.store') }}" method="POST">
-    @csrf
-    <div class="row mb-3">
-        <!-- Nome do Alimento -->
-        <div class="col-md-6">
-            <label for="nome" class="form-label text-primary">Nome do Alimento</label>
-            <input type="text" class="form-control" id="nome" name="nome" required>
+        @csrf
+        <div class="mb-3">
+            <label class="form-label">Nome</label>
+            <input type="text" name="nome" class="form-control" required>
         </div>
-
-        <!-- Valor Médio -->
-        <div class="col-md-6">
-            <label for="valor_medio" class="form-label text-primary">Valor Médio (R$)</label>
-            <input type="number" step="0.01" class="form-control" id="valor_medio" name="valor_medio" required>
-        </div>
-    </div>
-
-    <div class="row mb-3">
-        <!-- Unidade de Medida -->
-        <div class="col-md-6">
-            <label for="unidade_medida" class="form-label text-primary">Unidade de Medida</label>
+        <div class="mb-3">
+            <label class="form-label">Unidade de Medida</label>
             <select name="unidade_medida" class="form-control" required>
-                <option value="kg">Kg</option>
-                <option value="litro">Litro</option>
-                <option value="unidade">Unidade</option>
-                <!-- Adicione outras unidades conforme necessário -->
+                <option value="grama">Grama</option>
+                <option value="ml">Mililitro</option>
             </select>
         </div>
 
-        <!-- Periodicidade -->
-        <div class="col-md-6">
-            <label for="periodicidade" class="form-label text-primary">Periodicidade</label>
-            <select name="periodicidade" class="form-control" required>
-                <option value="semanal">Semanal</option>
-                <option value="mensal">Mensal</option>
-            </select>
+        <div class="row">
+            @foreach (['pre_escola' => 'Pré-escola', 'fundamental' => 'Fundamental', 'eja' => 'EJA'] as $key => $label)
+            <div class="col-md-4">
+                <div class="mb-3">
+                    <h4>{{ $label }}</h4>
+                    <label class="form-label">Quantidade por aluno</label>
+                    <input type="number" name="{{ $key }}_qtd" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Total de alunos</label>
+                    <input type="number" name="{{ $key }}_alunos" class="form-control" required>
+                </div>
+            </div>
+            @endforeach
         </div>
-    </div>
 
-    <!-- Especificação do Produto -->
-    <div class="mb-3">
-        <label for="especificacao" class="form-label text-primary">Especificação do Produto</label>
-        <textarea class="form-control" id="especificacao" name="especificacao" required></textarea>
-    </div>
-
-    <!-- Botão de Submissão -->
-    <button type="submit" class="btn btn-primary">Cadastrar Alimento</button>
-</form>
-
+        <button type="submit" class="btn btn-primary">Salvar</button>
+    </form>
 </div>
 @endsection

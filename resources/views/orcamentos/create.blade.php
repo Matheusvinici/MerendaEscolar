@@ -2,16 +2,34 @@
 
 @section('content')
 <div class="container">
-    <h1 class="mb-4">Criar Orçamento</h1>
+    <h1 class="mb-4">Cadastrar Orçamento</h1>
 
     <div class="card shadow-sm p-4">
         <form action="{{ route('orcamentos.store') }}" method="POST">
             @csrf
 
-            <!-- Campo de Descrição -->
-            <div class="mb-4">
-                <label for="descricao" class="form-label fw-bold">Descrição do Orçamento</label>
-                <input type="text" name="descricao" class="form-control" required placeholder="Ex: Orçamento Mensal">
+            <!-- Descrição e Dias Letivos na mesma linha -->
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="descricao" class="form-label fw-bold">Descrição do Orçamento</label>
+                    <input type="text" name="descricao" id="descricao" class="form-control" required placeholder="Ex: Orçamento Mensal">
+                </div>
+                <div class="col-md-6">
+                    <label for="dias_letivos" class="form-label fw-bold">Quantidade de Dias Letivos</label>
+                    <input type="number" name="dias_letivos" id="dias_letivos" class="form-control" required min="1">
+                </div>
+            </div>
+
+            <!-- Data de Início e Data de Fim na mesma linha -->
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="data_inicio" class="form-label fw-bold">Data de Início</label>
+                    <input type="date" name="data_inicio" id="data_inicio" class="form-control" required>
+                </div>
+                <div class="col-md-6">
+                    <label for="data_fim" class="form-label fw-bold">Data de Fim</label>
+                    <input type="date" name="data_fim" id="data_fim" class="form-control" required>
+                </div>
             </div>
 
             <!-- Seleção de Alimentos -->
@@ -22,17 +40,14 @@
                 <div class="col-md-6 mb-3">
                     <div class="card p-3 shadow-sm">
                         <div class="form-check">
-                            <!-- Checkbox para selecionar o alimento -->
-                            <input type="checkbox" class="form-check-input alimento-checkbox" id="alimento_{{ $alimento->id }}" value="{{ $alimento->id }}">
+                            <input type="checkbox" class="form-check-input alimento-checkbox" id="alimento_{{ $alimento->id }}" name="alimentos[{{ $alimento->id }}][id]" value="{{ $alimento->id }}">
                             <label class="form-check-label fw-bold" for="alimento_{{ $alimento->id }}">
-                                {{ $alimento->nome }} ({{ $alimento->unidade_medida }})  
+                                {{ $alimento->nome }} ({{ $alimento->unidade_medida }})
                             </label>
-                            <p class="text-muted mb-2">Preço médio: <strong>R$ {{ number_format($alimento->valor_medio, 2, ',', '.') }}</strong></p>
-
-                            <!-- Campos ocultos para alimentos selecionados -->
-                            <input type="hidden" name="alimentos[{{ $alimento->id }}][id]" class="alimento-id" disabled>
-                            <input type="number" name="alimentos[{{ $alimento->id }}][quantidade]" class="form-control quantidade-input d-none" placeholder="Quantidade" step="0.01" min="0.01" disabled>
                         </div>
+                        
+                        <!-- Campo para inserir o preço unitário -->
+                        <input type="number" name="alimentos[{{ $alimento->id }}][preco_unitario]" class="form-control preco-unitario d-none" placeholder="Preço Unitário (R$)" step="0.01" min="0.01" disabled>
                     </div>
                 </div>
                 @endforeach
@@ -43,30 +58,23 @@
     </div>
 </div>
 
-<!-- Script para exibir os campos de quantidade apenas quando necessário -->
+<!-- Script para exibir o campo de preço unitário ao selecionar um alimento -->
 <script>
     document.addEventListener("DOMContentLoaded", function() {
         document.querySelectorAll(".alimento-checkbox").forEach(checkbox => {
             checkbox.addEventListener("change", function() {
                 const card = this.closest(".card");
-                const quantidadeInput = card.querySelector(".quantidade-input");
-                const alimentoIdInput = card.querySelector(".alimento-id");
+                const precoUnitarioInput = card.querySelector(".preco-unitario");
 
                 if (this.checked) {
-                    quantidadeInput.classList.remove("d-none");
-                    quantidadeInput.disabled = false;
-                    quantidadeInput.required = true;
-
-                    alimentoIdInput.value = this.value;
-                    alimentoIdInput.disabled = false;
+                    precoUnitarioInput.classList.remove("d-none");
+                    precoUnitarioInput.disabled = false;
+                    precoUnitarioInput.required = true;
                 } else {
-                    quantidadeInput.classList.add("d-none");
-                    quantidadeInput.disabled = true;
-                    quantidadeInput.required = false;
-                    quantidadeInput.value = "";
-
-                    alimentoIdInput.value = "";
-                    alimentoIdInput.disabled = true;
+                    precoUnitarioInput.classList.add("d-none");
+                    precoUnitarioInput.disabled = true;
+                    precoUnitarioInput.required = false;
+                    precoUnitarioInput.value = "";
                 }
             });
         });

@@ -2,19 +2,21 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Escola extends Model
 {
-    protected $table = 'escolas';
+    use HasFactory;
 
-    public function usuarios()
-    {
-        return $this->hasMany(Usuario::class, 'escola_id');
-    }
+    protected $fillable = [
+        'nome', 
+        'inep'
+    ];
 
-    public function itensPedidos()
+    // Relações
+    public function orcamentos()
     {
-        return $this->hasMany(ItemPedido::class, 'escola_id');
+        return $this->hasMany(Orcamento::class);
     }
 }

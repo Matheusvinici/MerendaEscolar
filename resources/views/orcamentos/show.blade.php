@@ -1,44 +1,40 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container bg-light p-4 rounded">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="text-primary">Detalhes do Orçamento</h1>
-        <a href="{{ route('orcamentos.index') }}" class="btn btn-primary d-flex align-items-center">
-            <span class="me-2">←</span> Voltar
-        </a>
-    </div>
+<div class="container">
+    <h1 class="mb-4">Detalhes do Orçamento</h1>
 
-    <div class="card mb-4 shadow-sm">
-        <div class="card-body">
-            <h4 class="card-title"><strong>Nome do Orçamento:</strong> {{ $orcamento->descricao }}</h4>
-            <br>
-            <p class="text-muted"><strong>Valor Total:</strong> R$ {{ number_format($orcamento->total_estimado, 2, ',', '.') }}</p>
-        </div>
-    </div>
+    <div class="card shadow-sm p-4">
+        <h3 class="fw-bold">{{ $orcamento->descricao }}</h3>
+        <p><strong>Data de Início:</strong> {{ \Carbon\Carbon::parse($orcamento->data_inicio)->format('d/m/Y') }}</p>
+        <p><strong>Data de Fim:</strong> {{ \Carbon\Carbon::parse($orcamento->data_fim)->format('d/m/Y') }}</p>
+        <p><strong>Dias Letivos:</strong> {{ $orcamento->dias_letivos }}</p>
+        <p><strong>Total do Orçamento:</strong> R$ {{ number_format($orcamento->total, 2, ',', '.') }}</p>
 
-    <h3 class="text-secondary">Alimentos no Orçamento</h3>
-    <table class="table table-striped">
-        <thead style="background-color: #1D3C6A; color: white;">
-            <tr>
-                <th>Nome</th>
-                <th>Unidade de Medida</th>
-                <th>Quantidade</th>
-                <th>Valor Unitário (R$)</th>
-                <th>Valor Total (R$)</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach ($orcamento->alimentos as $alimento)
+        <h4 class="mt-4">Alimentos Selecionados</h4>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>Unidade</th>
+                    <th>Preço Unitário</th>
+                    <th>Custo Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($orcamento->alimentos as $alimento)
                 <tr>
                     <td>{{ $alimento->nome }}</td>
                     <td>{{ $alimento->unidade_medida }}</td>
-                    <td>{{ $alimento->pivot->quantidade }}</td>
-                    <td>R$ {{ number_format($alimento->pivot->valor_unitario, 2, ',', '.') }}</td>
-                    <td>R$ {{ number_format($alimento->pivot->valor_total, 2, ',', '.') }}</td>
+                    <td>R$ {{ number_format($alimento->pivot->valor_medio, 2, ',', '.') }}</td>
+                    <td>R$ {{ number_format($alimento->pivot->custo_total, 2, ',', '.') }}</td>
                 </tr>
-            @endforeach
-        </tbody>
-    </table>
+                @endforeach
+            </tbody>
+        </table>
+
+        <a href="{{ route('orcamentos.index') }}" class="btn btn-secondary mt-3">Voltar</a>
+        <a href="{{ route('orcamentos.edit', $orcamento) }}" class="btn btn-primary mt-3">Editar</a>
+    </div>
 </div>
 @endsection

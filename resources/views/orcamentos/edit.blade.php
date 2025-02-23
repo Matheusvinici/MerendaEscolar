@@ -5,60 +5,77 @@
     <h1 class="mb-4">Editar Orçamento</h1>
 
     <div class="card shadow-sm p-4">
-        <form action="{{ route('orcamentos.update', $orcamento->id) }}" method="POST">
+        <form action="{{ route('orcamentos.update', $orcamento) }}" method="POST">
             @csrf
             @method('PUT')
 
-            <!-- Campo de Descrição -->
-            <div class="mb-4">
-                <label for="descricao" class="form-label fw-bold">Descrição do Orçamento</label>
-                <input type="text" name="descricao" class="form-control" value="{{ old('descricao', $orcamento->descricao) }}" required>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="descricao" class="form-label fw-bold">Descrição do Orçamento</label>
+                    <input type="text" name="descricao" id="descricao" class="form-control" value="{{ $orcamento->descricao }}" required>
+                </div>
+                <div class="col-md-6">
+                    <label for="dias_letivos" class="form-label fw-bold">Quantidade de Dias Letivos</label>
+                    <input type="number" name="dias_letivos" id="dias_letivos" class="form-control" value="{{ $orcamento->dias_letivos }}" required min="1">
+                </div>
             </div>
 
-            <!-- Tabela de Alimentos no Orçamento -->
-            <h4 class="mb-3">Alimentos no Orçamento</h4>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="data_inicio" class="form-label fw-bold">Data de Início</label>
+                    <input type="date" name="data_inicio" id="data_inicio" class="form-control" value="{{ $orcamento->data_inicio }}" required>
+                </div>
+                <div class="col-md-6">
+                    <label for="data_fim" class="form-label fw-bold">Data de Fim</label>
+                    <input type="date" name="data_fim" id="data_fim" class="form-control" value="{{ $orcamento->data_fim }}" required>
+                </div>
+            </div>
 
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th>Alimento</th>
-                        <th>Unidade de Medida</th>
-                        <th>Valor Unitário (R$)</th>
-                        <th>Quantidade</th>
-                        <th>Valor Total (R$)</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($orcamento->alimentos as $alimento)
-                        <tr>
-                            <td>{{ $alimento->nome }}</td>
+            <h4 class="mb-3">Alimentos Selecionados</h4>
+            <div class="row">
+                @foreach($alimentos as $alimento)
+                <div class="col-md-6 mb-3">
+                    <div class="card p-3 shadow-sm">
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input alimento-checkbox" id="alimento_{{ $alimento->id }}" name="alimentos[{{ $alimento->id }}][id]" value="{{ $alimento->id }}" 
+                            @if($orcamento->alimentos->contains($alimento->id)) checked @endif>
+                            <label class="form-check-label fw-bold" for="alimento_{{ $alimento->id }}">
+                                {{ $alimento->nome }} ({{ $alimento->unidade_medida }})
+                            </label>
+                        </div>
+                        <input type="number" name="alimentos[{{ $alimento->id }}][preco_unitario]" class="form-control preco-unitario @if(!$orcamento->alimentos->contains($alimento->id)) d-none @endif" 
+                            value="{{ $orcamento->alimentos->contains($alimento->id) ? $orcamento->alimentos->find($alimento->id)->pivot->valor_medio : '' }}" 
+                            placeholder="Preço Unitário (R$)" step="0.01" min="0.01" 
+                            @if(!$orcamento->alimentos->contains($alimento->id)) disabled @endif>
+                    </div>
+                </div>
+                @endforeach
+            </div>
 
-                            <!-- Campo para Editar Unidade de Medida -->
-                            <td>
-                                <input type="text" name="alimentos[{{ $alimento->pivot->id }}][unidade_medida]" value="{{ old('alimentos.' . $alimento->pivot->id . '.unidade_medida', $alimento->pivot->unidade_medida) }}" class="form-control">
-                            </td>
-
-                            <!-- Campo para Editar Valor Unitário -->
-                            <td>
-                                <input type="number" name="alimentos[{{ $alimento->pivot->id }}][valor_unitario]" value="{{ old('alimentos.' . $alimento->pivot->id . '.valor_unitario', $alimento->pivot->valor_unitario) }}" class="form-control" step="0.01" min="0">
-                            </td>
-
-                            <!-- Campo para Editar Quantidade -->
-                            <td>
-                                <input type="number" name="alimentos[{{ $alimento->pivot->id }}][quantidade]" value="{{ old('alimentos.' . $alimento->pivot->id . '.quantidade', $alimento->pivot->quantidade) }}" class="form-control" step="0.01" min="0.01">
-                            </td>
-
-                            <!-- Valor Total (calculado automaticamente) -->
-                            <td>
-                                R$ {{ number_format($alimento->pivot->quantidade * $alimento->pivot->valor_unitario, 2, ',', '.') }}
-                            </td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
-
-            <button type="submit" class="btn btn-primary mt-3 w-100">Salvar Alterações</button>
+            <button type="submit" class="btn btn-success mt-3 w-100">Salvar Alterações</button>
         </form>
     </div>
 </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        document.querySelectorAll(".alimento-checkbox").forEach(checkbox => {
+            checkbox.addEventListener("change", function() {
+                const card = this.closest(".card");
+                const precoUnitarioInput = card.querySelector(".preco-unitario");
+
+                if (this.checked) {
+                    precoUnitarioInput.classList.remove("d-none");
+                    precoUnitarioInput.disabled = false;
+                    precoUnitarioInput.required = true;
+                } else {
+                    precoUnitarioInput.classList.add("d-none");
+                    precoUnitarioInput.disabled = true;
+                    precoUnitarioInput.required = false;
+                    precoUnitarioInput.value = "";
+                }
+            });
+        });
+    });
+</script>
 @endsection

@@ -1,6 +1,5 @@
 <?php
 
-// app/Models/Orcamento.php
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -10,21 +9,12 @@ class Orcamento extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'descricao',
-        'total_estimado',
-    ];
+    protected $fillable = ['descricao', 'data_inicio', 'data_fim', 'dias_letivos', 'total'];
 
-    public function orcamentoAlimentos()
-    {
-       
-        return $this->hasMany(OrcamentoAlimento::class);
-    }
     public function alimentos()
-        {
-            return $this->belongsToMany(Alimento::class, 'orcamento_alimentos')
-                        ->withPivot('quantidade', 'valor_unitario', 'valor_total')
-                        ->withTimestamps();
-        }
-
+    {
+        return $this->belongsToMany(Alimento::class, 'orcamento_alimentos')
+                    ->withPivot('valor_medio', 'custo_total');
+    }
+  
 }
