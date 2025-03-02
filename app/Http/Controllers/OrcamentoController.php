@@ -70,6 +70,7 @@ class OrcamentoController extends Controller
             return view('orcamentos.index', compact('orcamentos'));
         }
 
+        
 
                 // Método show
                 public function show($id)

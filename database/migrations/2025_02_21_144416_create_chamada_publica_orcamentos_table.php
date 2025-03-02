@@ -11,12 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('chamadas', function (Blueprint $table) {
-            $table->increments('id');
-            $table->string('numero_edital');
-            $table->date('data_abertura');
-            $table->date('data_encerramento');
-            $table->text('observacoes')->nullable();
+        Schema::create('chamada_publica_orcamentos', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('chamada_publica_id')->constrained('chamadas_publicas')->onDelete('cascade');
+            $table->foreignId('orcamento_id')->constrained('orcamentos')->onDelete('cascade');
+
             $table->timestamps();
         });
     }
@@ -26,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('chamadas');
+        Schema::dropIfExists('chamada_publica_orcamentos');
     }
 };

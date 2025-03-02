@@ -11,23 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
+     // Migration para criar a tabela 'propostas'
         Schema::create('propostas', function (Blueprint $table) {
-            $table->increments('id');
-            $table->float('quantidade', 8, 2);
-            $table->float('valor_unitario', 8, 2);
-            $table->float('valor_total', 8, 2);
-            $table->date('data_entrega');
-            $table->text('observacoes')->nullable();
-            $table->enum('status', ['pendente', 'aprovada', 'recusada'])->default('pendente');
-            $table->string('contrato')->nullable();
-            $table->integer('item_id')->unsigned()->nullable();
-            $table->foreign('item_id')->references('id')->on('itens');
-            $table->integer('produtor_id')->unsigned()->nullable();
-            $table->foreign('produtor_id')->references('id')->on('produtores');
-            $table->bigInteger('user_id')->unsigned()->nullable();
-            $table->foreign('user_id')->references('id')->on('users');
+            $table->id();
+            $table->foreignId('chamada_publica_id')->constrained('chamadas_publicas')->onDelete('cascade');
+            $table->decimal('valor_total', 8, 2); // Valor total da oferta (quantidade * preço unitário)
             $table->timestamps();
         });
+
     }
 
     /**

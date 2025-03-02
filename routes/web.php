@@ -5,9 +5,10 @@ use App\Http\Controllers\{
     AlimentoController,
     CardapioController,
     OrcamentoController,
-    OrcamentoAlimentoController,
     EscolaController,
-    FaixaEtariaController,
+    ChamadaPublicaController,
+    ValidacaoController,
+    PropostaController,
 };
 
 Route::get('/', function () {
@@ -27,16 +28,19 @@ Route::middleware('auth')->group(function () {
     Route::resource('cardapios', CardapioController::class);
     Route::resource('orcamentos', OrcamentoController::class);
     Route::resource('escolas', EscolaController::class);
-    Route::resource('etarias', FaixaEtariaController::class);
+    Route::resource('chamadas_publicas', ChamadaPublicaController::class);
+    Route::resource('validacoes', ValidacaoController::class);
+   
+    Route::resource('propostas', PropostaController::class);
+// Rota para exibir o formulário de cadastro de proposta de venda
+Route::get('/propostas/create', [PropostaController::class, 'create'])->name('propostas.create');
 
+// Rota para salvar a proposta de venda
+Route::post('/propostas', [PropostaController::class, 'store'])->name('propostas.store');
 
-    Route::prefix('orcamentos/{orcamento}/alimentos')->group(function () {
-        Route::get('create', [OrcamentoAlimentoController::class, 'create'])->name('orcamentos.alimentos.create');
-        Route::post('store', [OrcamentoAlimentoController::class, 'store'])->name('orcamentos.alimentos.store');
-        Route::get('{alimento}/edit', [OrcamentoAlimentoController::class, 'edit'])->name('orcamentos.alimentos.edit');
-        Route::put('{alimento}/update', [OrcamentoAlimentoController::class, 'update'])->name('orcamentos.alimentos.update');
-        Route::delete('{alimento}/destroy', [OrcamentoAlimentoController::class, 'destroy'])->name('orcamentos.alimentos.destroy');
-    });
+// Rota para obter alimentos relacionados a uma chamada pública
+Route::get('/chamadas-publicas/{id}/alimentos', [PropostaController::class, 'getAlimentosByChamadaPublica']);
+    
 
     Route::get('profile', [\App\Http\Controllers\ProfileController::class, 'show'])->name('profile.show');
     Route::put('profile', [\App\Http\Controllers\ProfileController::class, 'update'])->name('profile.update');

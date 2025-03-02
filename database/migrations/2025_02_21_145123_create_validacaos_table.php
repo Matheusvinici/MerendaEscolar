@@ -32,6 +32,7 @@ return new class extends Migration
             $table->string('cert_prod_organica')->nullable();
             $table->string('cert_prod_agroecologica')->nullable();
             $table->string('regs_sanitario_alimentos');
+            $table->string('audio_ajuda_url')->nullable(); // Salvar o caminho do áudio
             $table->bigInteger('user_id')->unsigned()->nullable();
             $table->foreign('user_id')->references('id')->on('users');
             $table->timestamps();

@@ -38,10 +38,33 @@
         <li class="nav-item">
             <a href="{{ route('orcamentos.index') }}" class="nav-link text-white">
                 <i class="nav-icon fas fa-book text-white"></i>
-                <p>{{ __('Orçamento') }}</p>
+                <p>{{ __('Orçamentos') }}</p>
             </a>
         </li>
 
+         <!-- Opção: Chamadas Públicas - Nova opção adicionada -->
+         <li class="nav-item">
+            <a href="{{ route('chamadas_publicas.index') }}" class="nav-link text-white">
+                <i class="nav-icon fas fa-bullhorn text-white"></i>
+                <p>{{ __('Chamadas Públicas') }}</p>
+            </a>
+        </li>
+
+        <!-- Opção: Chamadas Públicas - Nova opção adicionada -->
+        <li class="nav-item">
+            <a href="{{ route('validacoes.index') }}" class="nav-link text-white">
+                <i class="nav-icon fas fa-bullhorn text-white"></i>
+                <p>{{ __('Cadastro de Documentação') }}</p>
+            </a>
+        </li>
+
+         <!-- Opção: Chamadas Públicas - Nova opção adicionada -->
+         <li class="nav-item">
+            <a href="{{ route('propostas.index') }}" class="nav-link text-white">
+                <i class="nav-icon fas fa-bullhorn text-white"></i>
+                <p>{{ __('Proposta de Venda') }}</p>
+            </a>
+        </li>
         <!-- About Us - Acesso para todos -->
         <li class="nav-item">
             <a href="{{ route('about') }}" class="nav-link text-white">
