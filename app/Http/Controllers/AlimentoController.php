@@ -9,7 +9,10 @@ class AlimentoController extends Controller
 {
     public function index()
     {
-        $alimentos = Alimento::all();
+        // Ordena os alimentos por ID em ordem decrescente (último registro primeiro)
+        $alimentos = Alimento::orderBy('id', 'desc') // Ordena por ID decrescente
+                             ->paginate(5); // Paginação com 5 registros por página
+    
         return view('alimentos.index', compact('alimentos'));
     }
 

@@ -11,8 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('estoques', function (Blueprint $table) {
-            $table->id();
+        Schema::create('regioes', function (Blueprint $table) {
+            $table->id(); // Isso cria uma coluna `id` do tipo `unsignedBigInteger`
+            $table->string('nome');
             $table->timestamps();
         });
     }
@@ -22,6 +23,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('estoques');
+        Schema::dropIfExists('regioes');
     }
 };

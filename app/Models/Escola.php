@@ -2,21 +2,25 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Escola extends Model
 {
-    use HasFactory;
+    protected $table = 'escolas';
 
     protected $fillable = [
-        'nome', 
-        'inep'
+        'nome',
+        'inep',
+        'bairro_id',
+        'pre_escola_alunos', // Total de alunos - Pré-escola
+        'fundamental_alunos', // Total de alunos - Fundamental
+        'eja_alunos', // Total de alunos - EJA
     ];
 
-    // Relações
-    public function orcamentos()
+    // Relacionamento: Uma escola pertence a um bairro
+    public function bairro(): BelongsTo
     {
-        return $this->hasMany(Orcamento::class);
+        return $this->belongsTo(Bairro::class, 'bairro_id');
     }
 }

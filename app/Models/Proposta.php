@@ -8,7 +8,7 @@ class Proposta extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['chamada_publica_id', 'alimento_id', 'valor_total'];
+    protected $fillable = ['chamada_publica_id', 'alimento_id', 'valor_total', 'status'];
 
     // Relacionamento com ChamadaPublica
     public function chamadaPublica()
@@ -19,10 +19,29 @@ class Proposta extends Model
     public function alimentos()
     {
         return $this->belongsToMany(Alimento::class, 'proposta_alimentos')
-                    ->withPivot('quantidade_ofertada', 'valor_total')
+                    ->withPivot('quantidade_ofertada','quantidade_aprovada', 'valor_total')
                     ->withTimestamps();
     }
+    
+    public function regiao()
+    {
+        return $this->belongsTo(Regiao::class);
+    }
 
+    public function avaliacoes()
+    {
+        return $this->hasMany(Avaliacao::class);
+    }
+
+    public function getTotalAprovadoPorAlimento($alimentoId)
+    {
+        return $this->avaliacoes()
+                    ->where('status', 'aprovada')
+                    ->whereHas('alimentos', function ($query) use ($alimentoId) {
+                        $query->where('alimento_id', $alimentoId);
+                    })
+                    ->sum('quantidade_aprovada');
+    }
 
     
 }

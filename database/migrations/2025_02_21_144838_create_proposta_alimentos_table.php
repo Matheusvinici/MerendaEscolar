@@ -16,6 +16,8 @@ return new class extends Migration
             $table->foreignId('proposta_id')->constrained()->onDelete('cascade');
             $table->foreignId('alimento_id')->constrained()->onDelete('cascade');
             $table->decimal('quantidade_ofertada', 8, 2); // Quantidade de alimento
+            $table->decimal('quantidade_aprovada', 8, 2)->nullable(); // Sem a cláusula after
+
             $table->decimal('valor_total', 10, 2); // Valor total do alimento na proposta
             $table->timestamps();
         });
@@ -27,5 +29,6 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('proposta_alimentos');
+
     }
 };

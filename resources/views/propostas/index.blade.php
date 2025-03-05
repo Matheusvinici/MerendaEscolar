@@ -1,3 +1,4 @@
+<!-- resources/views/propostas/index.blade.php -->
 @extends('layouts.app')
 
 @section('content')
@@ -24,14 +25,28 @@
                 <tr>
                     <th>Chamada Pública</th>
                     <th>Valor Total</th>
+                    <th>Região</th>
+                    <th>Status</th>
                     <th>Ações</th>
                 </tr>
             </thead>
             <tbody>
                 @forelse ($propostas as $proposta)
                     <tr>
-                        <td>{{ $proposta->chamadaPublica->descricao }}</td>
-                        <td>R$ {{ number_format($proposta->valor_total, 2, ',', '.') }}</td>
+                        <td>{{ $proposta->chamadaPublica->titulo }}</td>
+                        @foreach ($proposta->alimentos as $alimento)
+                            <td>R$ {{ number_format($alimento->pivot->valor_total, 2, ',', '.') }}</td>
+                        @endforeach
+                                    <td>{{ $proposta->regiao->nome }}</td>
+                        <td>
+                            @if ($proposta->status === 'pendente')
+                                <span class="badge bg-warning">Pendente</span>
+                            @elseif ($proposta->status === 'aprovada')
+                                <span class="badge bg-success">Aprovada</span>
+                            @elseif ($proposta->status === 'reprovada')
+                                <span class="badge bg-danger">Reprovada</span>
+                            @endif
+                        </td>
                         <td>
                             <a href="{{ route('propostas.show', $proposta->id) }}" class="btn btn-info btn-sm">
                                 <i class="fas fa-eye"></i> Ver
@@ -43,7 +58,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="3" class="text-center">Nenhuma proposta cadastrada.</td>
+                        <td colspan="5" class="text-center">Nenhuma proposta cadastrada.</td>
                     </tr>
                 @endforelse
             </tbody>
@@ -75,6 +90,19 @@
     }
     .btn-success {
         margin-bottom: 15px;
+    }
+    .badge {
+        font-size: 0.9rem;
+        padding: 0.5em 0.75em;
+    }
+    .bg-warning {
+        background-color: #ffc107;
+    }
+    .bg-success {
+        background-color: #28a745;
+    }
+    .bg-danger {
+        background-color: #dc3545;
     }
 </style>
 @endsection

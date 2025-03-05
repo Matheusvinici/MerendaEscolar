@@ -1,3 +1,4 @@
+<!-- resources/views/propostas/show.blade.php -->
 @extends('layouts.app')
 
 @section('content')
@@ -15,6 +16,7 @@
                     <tr>
                         <th>Alimento</th>
                         <th>Quantidade Ofertada</th>
+                        <th>Quantidade Aprovada</th>
                         <th>Valor Total</th>
                     </tr>
                 </thead>
@@ -23,6 +25,7 @@
                         <tr>
                             <td>{{ $alimento->nome }}</td>
                             <td>{{ $alimento->pivot->quantidade_ofertada }} Kg/Litro</td>
+                            <td>{{ $alimento->pivot->quantidade_aprovada ?? '0' }} Kg/Litro</td>
                             <td>R$ {{ number_format($alimento->pivot->valor_total, 2, ',', '.') }}</td>
                         </tr>
                     @endforeach

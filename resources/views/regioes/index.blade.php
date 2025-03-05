@@ -2,14 +2,7 @@
 
 @section('content')
 <div class="container">
-    <br>
-    <!-- Cabeçalho com título e botão alinhados -->
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h2>Lista de Chamadas Públicas</h2>
-        <a href="{{ route('chamadas_publicas.create') }}" class="btn btn-dark">
-            <i class="fas fa-plus"></i> Registrar Chamada Pública
-        </a>
-    </div>
+    <h1 class="mb-4">Regiões</h1>
 
     @if (session('success'))
         <div class="alert alert-success">
@@ -17,33 +10,36 @@
         </div>
     @endif
 
-    <!-- Tabela de chamadas públicas -->
+    <!-- Botão para criar nova região -->
+    <div class="mb-3">
+        <a href="{{ route('regioes.create') }}" class="btn btn-success">
+            <i class="fas fa-plus"></i> Nova Região
+        </a>
+    </div>
+
+    <!-- Tabela de regiões -->
     <div class="table-responsive">
-        <table class="table table-striped table-bordered">
-            <thead class="thead-light">
+        <table class="table table-bordered table-striped">
+            <thead>
                 <tr>
-                    <th>Título</th>
-                    <th>Data de Abertura</th>
-                    <th>Data de Fechamento</th>
-                    <th>Status</th>
+                    <th>ID</th>
+                    <th>Nome</th>
                     <th>Ações</th>
                 </tr>
             </thead>
             <tbody>
-                @forelse ($chamadasPublicas as $chamadaPublica)
+                @forelse ($regioes as $regiao)
                     <tr>
-                        <td>{{ $chamadaPublica->titulo }}</td>
-                        <td>{{ \Carbon\Carbon::parse($chamadaPublica->data_abertura)->format('d/m/Y') }}</td>
-                        <td>{{ \Carbon\Carbon::parse($chamadaPublica->data_fechamento)->format('d/m/Y') }}</td>
-                        <td>{{ ucfirst($chamadaPublica->status) }}</td>
+                        <td>{{ $regiao->id }}</td>
+                        <td>{{ $regiao->nome }}</td>
                         <td>
-                            <a href="{{ route('chamadas_publicas.show', $chamadaPublica->id) }}" class="btn btn-info btn-sm">
+                            <a href="{{ route('regioes.show', $regiao->id) }}" class="btn btn-info btn-sm">
                                 <i class="fas fa-eye"></i> Ver
                             </a>
-                            <a href="{{ route('chamadas_publicas.edit', $chamadaPublica->id) }}" class="btn btn-primary btn-sm">
+                            <a href="{{ route('regioes.edit', $regiao->id) }}" class="btn btn-primary btn-sm">
                                 <i class="fas fa-edit"></i> Editar
                             </a>
-                            <form action="{{ route('chamadas_publicas.destroy', $chamadaPublica->id) }}" method="POST" style="display:inline;">
+                            <form action="{{ route('regioes.destroy', $regiao->id) }}" method="POST" style="display:inline;">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="btn btn-danger btn-sm">
@@ -54,7 +50,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="5" class="text-center">Nenhuma chamada pública cadastrada.</td>
+                        <td colspan="3" class="text-center">Nenhuma região cadastrada.</td>
                     </tr>
                 @endforelse
             </tbody>
@@ -63,7 +59,7 @@
 
     <!-- Links de paginação -->
     <div class="d-flex justify-content-center mt-4">
-        {{ $chamadasPublicas->links() }}
+        {{ $regioes->links() }}
     </div>
 </div>
 @endsection
@@ -77,14 +73,14 @@
     .btn-sm {
         margin: 2px;
     }
-    h2 {
+    h1 {
         font-size: 1.5rem;
         font-weight: bold;
     }
     th, td {
         text-align: center;
     }
-    .btn-dark {
+    .btn-success {
         margin-bottom: 15px;
     }
     .badge {

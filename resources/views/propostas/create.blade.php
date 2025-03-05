@@ -27,9 +27,37 @@
             <select name="chamada_publica_id" id="chamada_publica_id" class="form-control" required>
                 <option value="">Selecione a Chamada Pública</option>
                 @foreach ($chamadasPublicas as $chamada)
-                    <option value="{{ $chamada->id }}">{{ $chamada->descricao }}</option>
+                    <option value="{{ $chamada->id }}">{{ $chamada->titulo }}</option>
                 @endforeach
             </select>
+        </div>
+
+        <!-- Seleção da Região -->
+        <div class="form-group">
+            <label for="regiao_id">Região</label>
+            <select name="regiao_id" id="regiao_id" class="form-control" required>
+                <option value="">Selecione a Região</option>
+                @foreach ($regioes as $regiao)
+                    <option value="{{ $regiao->id }}">{{ $regiao->nome }}</option>
+                @endforeach
+            </select>
+        </div>
+
+        <!-- Informativo dos Bairros por Região -->
+        <div class="form-group">
+            <label>Bairros por Região</label>
+            <div id="bairros-info">
+                @foreach ($regioes as $regiao)
+                    <div class="regiao-bairros" data-regiao="{{ $regiao->id }}" style="display: none;">
+                        <strong>{{ $regiao->nome }}:</strong>
+                        <ul>
+                            @foreach ($regiao->bairros as $bairro)
+                                <li>{{ $bairro->nome }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endforeach
+            </div>
         </div>
 
         <!-- Seleção de Alimentos e Quantidades -->
@@ -68,6 +96,25 @@
                 quantidadeGroup.style.display = 'none';
             }
         });
+    });
+
+    // Exibir bairros da região selecionada
+    document.getElementById('regiao_id').addEventListener('change', function () {
+        const regiaoId = this.value;
+        const bairrosInfo = document.querySelectorAll('.regiao-bairros');
+
+        // Esconder todos os informativos
+        bairrosInfo.forEach(info => {
+            info.style.display = 'none';
+        });
+
+        // Exibir o informativo da região selecionada
+        if (regiaoId) {
+            const infoSelecionado = document.querySelector(`.regiao-bairros[data-regiao="${regiaoId}"]`);
+            if (infoSelecionado) {
+                infoSelecionado.style.display = 'block';
+            }
+        }
     });
 
     // Remover campos de alimentos não selecionados antes de enviar o formulário

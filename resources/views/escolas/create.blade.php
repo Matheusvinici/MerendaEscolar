@@ -1,32 +1,48 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container bg-light p-4 rounded">
-    <h1 class="text-primary mb-4">Cadastrar Nova Escola</h1>
+    <h1>Criar Escola</h1>
+    <!-- escolas.create.blade.php e escolas.edit.blade.php -->
+<form method="POST" action="{{ isset($escola) ? route('escolas.update', $escola->id) : route('escolas.store') }}">
+    @csrf
+    @if(isset($escola))
+        @method('PUT')
+    @endif
 
-    <form action="{{ route('escolas.store') }}" method="POST">
-        @csrf
+    <div class="form-group">
+        <label for="nome">Nome</label>
+        <input type="text" name="nome" id="nome" class="form-control" value="{{ isset($escola) ? $escola->nome : '' }}" required>
+    </div>
 
-        <!-- Nome da Escola -->
-        <div class="mb-3">
-            <label for="nome" class="form-label text-primary">Nome da Escola</label>
-            <input type="text" class="form-control" id="nome" name="nome" required>
-        </div>
+    <div class="form-group">
+        <label for="inep">INEP</label>
+        <input type="text" name="inep" id="inep" class="form-control" value="{{ isset($escola) ? $escola->inep : '' }}">
+    </div>
 
-        <!-- Endereço da Escola -->
-        <div class="mb-3">
-            <label for="endereco" class="form-label text-primary">Endereço</label>
-            <input type="text" class="form-control" id="endereco" name="endereco" required>
-        </div>
+    <div class="form-group">
+        <label for="bairro_id">Bairro</label>
+        <select name="bairro_id" id="bairro_id" class="form-control" required>
+            @foreach($bairros as $bairro)
+                <option value="{{ $bairro->id }}" {{ isset($escola) && $escola->bairro_id == $bairro->id ? 'selected' : '' }}>{{ $bairro->nome }}</option>
+            @endforeach
+        </select>
+    </div>
 
-        <!-- Contato -->
-        <div class="mb-3">
-            <label for="contato" class="form-label text-primary">Contato</label>
-            <input type="text" class="form-control" id="contato" name="contato" required>
-        </div>
+    <div class="form-group">
+        <label for="pre_escola_alunos">Alunos Pré-Escola</label>
+        <input type="number" name="pre_escola_alunos" id="pre_escola_alunos" class="form-control" value="{{ isset($escola) ? $escola->pre_escola_alunos : '' }}">
+    </div>
 
-        <!-- Botão de Submissão -->
-        <button type="submit" class="btn btn-primary">Cadastrar Escola</button>
-    </form>
-</div>
+    <div class="form-group">
+        <label for="fundamental_alunos">Alunos Fundamental</label>
+        <input type="number" name="fundamental_alunos" id="fundamental_alunos" class="form-control" value="{{ isset($escola) ? $escola->fundamental_alunos : '' }}">
+    </div>
+
+    <div class="form-group">
+        <label for="eja_alunos">Alunos EJA</label>
+        <input type="number" name="eja_alunos" id="eja_alunos" class="form-control" value="{{ isset($escola) ? $escola->eja_alunos : '' }}">
+    </div>
+
+    <button type="submit" class="btn btn-primary">{{ isset($escola) ? 'Atualizar' : 'Cadastrar' }}</button>
+</form>
 @endsection
