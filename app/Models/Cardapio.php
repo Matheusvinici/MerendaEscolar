@@ -9,27 +9,49 @@ class Cardapio extends Model
 {
     use HasFactory;
 
-    // Campos que podem ser preenchidos em massa
     protected $fillable = [
         'nome',
-        'quantidade_porcao_gr',
-        'quantidade_kg',
-        'dias_servido',
-        'alimento_id',
+        'descricao',
         'escola_id',
+        'segmento_id',
+        'data_inicio',
+        'data_fim',
+        'observacoes',
+        'ativo',
+        'padrao'
     ];
 
-    // Relacionamento com a escola
+    protected $casts = [
+        'ativo' => 'boolean',
+        'padrao' => 'boolean',
+        'data_inicio' => 'date',
+        'data_fim' => 'date'
+    ];
+
+    public function alimentos()
+    {
+        return $this->belongsToMany(Alimento::class)
+                    ->withPivot('dia_semana', 'refeicao')
+                    ->withTimestamps();
+    }
+
     public function escola()
     {
-        return $this->belongsTo(Escola::class, 'escola_id');
+        return $this->belongsTo(Escola::class);
     }
 
-    // Relacionamento com o alimento
-    public function alimento()
+    public function segmento()
     {
-        return $this->belongsTo(Alimento::class, 'alimento_id');
+        return $this->belongsTo(Segmento::class);
     }
 
-  
+    public function scopeAtivo($query)
+    {
+        return $query->where('ativo', true);
+    }
+
+    public function scopePadrao($query)
+    {
+        return $query->where('padrao', true);
+    }
 }

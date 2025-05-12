@@ -1,78 +1,70 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use App\Models\Escola;
-use App\Models\Bairro;
 use Illuminate\Http\Request;
 
 class EscolaController extends Controller
 {
-    // Listar todas as escolas
     public function index()
     {
-        // Ordena as escolas por ID em ordem decrescente (último registro primeiro)
-        $escolas = Escola::with('bairro') // Carrega o relacionamento com bairro
-                         ->orderBy('id', 'desc') // Ordena por ID decrescente
-                         ->paginate(5); // Paginação com 5 registros por página
-    
+        $escolas = Escola::withCount('alunos')->get();
         return view('escolas.index', compact('escolas'));
     }
 
-    // Exibir formulário de criação
     public function create()
     {
-        $bairros = Bairro::all();
-        return view('escolas.create', compact('bairros'));
+        return view('escolas.create');
     }
 
     public function store(Request $request)
-{
-    $request->validate([
-        'nome' => 'required',
-        'inep' => 'nullable',
-        'bairro_id' => 'required|exists:bairros,id',
-        'pre_escola_alunos' => 'nullable|integer',
-        'fundamental_alunos' => 'nullable|integer',
-        'eja_alunos' => 'nullable|integer',
-    ]);
-
-    Escola::create($request->all());
-
-    return redirect()->route('escolas.index')->with('success', 'Escola cadastrada com sucesso!');
-}
-    // Exibir detalhes de uma escola
-    public function show(Escola $escola)
     {
-        return view('escolas.show', compact('escola'));
+        $validated = $request->validate([
+            'nome' => 'required|string|max:255',
+            'codigo_inep' => 'required|string|max:20|unique:escolas'
+        ]);
+
+        Escola::create($validated);
+
+        return redirect()->route('escolas.index')
+                         ->with('success', 'Escola cadastrada com sucesso!');
     }
 
-    public function edit($id)
+    public function show(Escola $escola)
     {
-        $escola = Escola::findOrFail($id);
+        $alunos = $escola->alunos()->orderBy('ano_letivo', 'desc')->get();
+        return view('escolas.show', compact('escola', 'alunos'));
+    }
+
+    public function edit(Escola $escola)
+    {
         return view('escolas.edit', compact('escola'));
     }
 
-    // Atualizar escola
-    public function update(Request $request, $id)
+    public function update(Request $request, Escola $escola)
     {
-        $request->validate([
-            'nome' => 'required',
-            'inep' => 'nullable',
-            'bairro_id' => 'required|exists:bairros,id',
-            'pre_escola_alunos' => 'nullable|integer',
-            'fundamental_alunos' => 'nullable|integer',
-            'eja_alunos' => 'nullable|integer',
+        $validated = $request->validate([
+            'nome' => 'required|string|max:255',
+            'codigo_inep' => 'required|string|max:20|unique:escolas,codigo_inep,'.$escola->id
         ]);
-    
-        $escola = Escola::findOrFail($id);
-        $escola->update($request->all());
-    
-        return redirect()->route('escolas.index')->with('success', 'Escola atualizada com sucesso!');
+
+        $escola->update($validated);
+
+        return redirect()->route('escolas.index')
+                         ->with('success', 'Escola atualizada com sucesso!');
     }
-    // Excluir escola
+
     public function destroy(Escola $escola)
     {
+        if ($escola->alunos()->exists()) {
+            return redirect()->route('escolas.index')
+                             ->with('error', 'Não é possível excluir escola com registros de alunos!');
+        }
+
         $escola->delete();
-        return redirect()->route('escolas.index')->with('success', 'Escola excluída com sucesso!');
+
+        return redirect()->route('escolas.index')
+                         ->with('success', 'Escola removida com sucesso!');
     }
 }

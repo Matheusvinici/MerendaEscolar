@@ -1,6 +1,5 @@
 <?php
 
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -13,39 +12,40 @@ class Alimento extends Model
     protected $fillable = [
         'nome',
         'unidade_medida',
-        'pre_escola_qtd',
-        'pre_escola_alunos',
-        'fundamental_qtd',
-        'fundamental_alunos',
-        'eja_qtd',
-        'eja_alunos',
-        'total_kg_litro'
+        'creche_parcial_per_capita',
+        'pre_integral_per_capita',
+        'fundamental_parcial_per_capita',
+        'fundamental_integral_per_capita',
+        'incidencia_creche_parcial',
+        'incidencia_pre_integral',
+        'incidencia_fundamental_parcial',
+        'incidencia_fundamental_integral',
+        'disponivel_quinzena',
+        'ativo'
     ];
 
-    public function orcamentos()
+    protected $casts = [
+        'disponivel_quinzena' => 'boolean',
+        'ativo' => 'boolean',
+        'creche_parcial_per_capita' => 'decimal:3',
+        'pre_integral_per_capita' => 'decimal:3',
+        'fundamental_parcial_per_capita' => 'decimal:3',
+        'fundamental_integral_per_capita' => 'decimal:3',
+        'incidencia_creche_parcial' => 'decimal:2',
+        'incidencia_pre_integral' => 'decimal:2',
+        'incidencia_fundamental_parcial' => 'decimal:2',
+        'incidencia_fundamental_integral' => 'decimal:2'
+    ];
+
+    public function cardapios()
     {
-        return $this->belongsToMany(Orcamento::class, 'orcamento_alimentos', 'alimento_id', 'orcamento_id')
-                    ->withPivot('valor_medio', 'custo_total') // Incluindo os campos adicionais da tabela pivô
-                    ->withTimestamps(); // Incluindo as timestamps da tabela pivô
+        return $this->belongsToMany(Cardapio::class)
+                    ->withPivot('dia_semana', 'refeicao');
     }
 
-    public function chamadasPublicas()
+    public function itensPedido()
     {
-        return $this->belongsToMany(ChamadaPublica::class, 'chamada_publica_alimento');
-    }
-
-    public function propostas()
-    {
-        return $this->belongsToMany(Proposta::class, 'proposta_alimentos')
-                    ->withPivot('quantidade_ofertada', 'valor_total')
-                    ->withTimestamps();
-    }
-
-    public function orcamentoAlimento()
-    {
-        return $this->hasOne(OrcamentoAlimento::class, 'alimento_id');
+        return $this->hasMany(ItemPedido::class);
     }
     
-
-   
 }

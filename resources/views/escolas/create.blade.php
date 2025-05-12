@@ -1,48 +1,44 @@
 @extends('layouts.app')
 
 @section('content')
-    <h1>Criar Escola</h1>
-    <!-- escolas.create.blade.php e escolas.edit.blade.php -->
-<form method="POST" action="{{ isset($escola) ? route('escolas.update', $escola->id) : route('escolas.store') }}">
-    @csrf
-    @if(isset($escola))
-        @method('PUT')
-    @endif
+<div class="container">
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h4>Cadastrar Nova Escola</h4>
+        </div>
+        <div class="card-body">
+            <form action="{{ route('escolas.store') }}" method="POST">
+                @csrf
 
-    <div class="form-group">
-        <label for="nome">Nome</label>
-        <input type="text" name="nome" id="nome" class="form-control" value="{{ isset($escola) ? $escola->nome : '' }}" required>
+                <div class="row mb-3">
+                    <div class="col-md-8">
+                        <label for="nome" class="form-label">Nome da Escola*</label>
+                        <input type="text" class="form-control @error('nome') is-invalid @enderror" 
+                               id="nome" name="nome" value="{{ old('nome') }}" required>
+                        @error('nome')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                    <div class="col-md-4">
+                        <label for="codigo_inep" class="form-label">Código INEP*</label>
+                        <input type="text" class="form-control @error('codigo_inep') is-invalid @enderror" 
+                               id="codigo_inep" name="codigo_inep" value="{{ old('codigo_inep') }}" required>
+                        @error('codigo_inep')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                </div>
+
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                    <a href="{{ route('escolas.index') }}" class="btn btn-secondary me-md-2">
+                        <i class="fas fa-arrow-left"></i> Cancelar
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Cadastrar Escola
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
-
-    <div class="form-group">
-        <label for="inep">INEP</label>
-        <input type="text" name="inep" id="inep" class="form-control" value="{{ isset($escola) ? $escola->inep : '' }}">
-    </div>
-
-    <div class="form-group">
-        <label for="bairro_id">Bairro</label>
-        <select name="bairro_id" id="bairro_id" class="form-control" required>
-            @foreach($bairros as $bairro)
-                <option value="{{ $bairro->id }}" {{ isset($escola) && $escola->bairro_id == $bairro->id ? 'selected' : '' }}>{{ $bairro->nome }}</option>
-            @endforeach
-        </select>
-    </div>
-
-    <div class="form-group">
-        <label for="pre_escola_alunos">Alunos Pré-Escola</label>
-        <input type="number" name="pre_escola_alunos" id="pre_escola_alunos" class="form-control" value="{{ isset($escola) ? $escola->pre_escola_alunos : '' }}">
-    </div>
-
-    <div class="form-group">
-        <label for="fundamental_alunos">Alunos Fundamental</label>
-        <input type="number" name="fundamental_alunos" id="fundamental_alunos" class="form-control" value="{{ isset($escola) ? $escola->fundamental_alunos : '' }}">
-    </div>
-
-    <div class="form-group">
-        <label for="eja_alunos">Alunos EJA</label>
-        <input type="number" name="eja_alunos" id="eja_alunos" class="form-control" value="{{ isset($escola) ? $escola->eja_alunos : '' }}">
-    </div>
-
-    <button type="submit" class="btn btn-primary">{{ isset($escola) ? 'Atualizar' : 'Cadastrar' }}</button>
-</form>
+</div>
 @endsection

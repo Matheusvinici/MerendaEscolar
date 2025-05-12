@@ -5,81 +5,195 @@ namespace App\Http\Controllers;
 use App\Models\Cardapio;
 use App\Models\Alimento;
 use App\Models\Escola;
-use App\Models\Chamada;
+use App\Models\Segmento;
+use PDF;
 use Illuminate\Http\Request;
 
 class CardapioController extends Controller
 {
-    // Exibe a lista de cardápios
     public function index()
     {
-        $cardapios = Cardapio::all();
-        return view('cardapios.index', compact('cardapios'));
+        $cardapios = Cardapio::with(['alimentos', 'escola', 'segmento'])
+                            ->orderBy('escola_id')
+                            ->orderBy('segmento_id')
+                            ->orderBy('data_inicio', 'desc')
+                            ->get();
+        
+        $segmentos = Segmento::ativo()->get();
+        $escolas = Escola::all();
+        
+        return view('cardapios.index', compact('cardapios', 'segmentos', 'escolas'));
     }
 
-    // Exibe o formulário de criação de cardápio
     public function create()
     {
-        $alimentos = Alimento::all(); // Lista de alimentos disponíveis
-        $escolas = Escola::all(); // Lista de escolas
-        return view('cardapios.create', compact('alimentos', 'escolas'));
+        $alimentos = Alimento::where('ativo', true)->orderBy('nome')->get();
+        $escolas = Escola::orderBy('nome')->get();
+        $segmentos = Segmento::ativo()->get();
+        
+        return view('cardapios.create', compact('alimentos', 'escolas', 'segmentos'));
     }
 
-    // Armazena um novo cardápio no banco de dados
     public function store(Request $request)
     {
         $request->validate([
             'nome' => 'required|string|max:255',
-            'quantidade_porcao_gr' => 'nullable|numeric',
-            'quantidade_kg' => 'nullable|numeric',
-            'dias_servido' => 'nullable|numeric',
-            'alimento_id' => 'nullable|exists:alimentos,id',
-            'escola_id' => 'nullable|exists:escolas,id',
+            'escola_id' => 'required|exists:escolas,id',
+            'segmento_id' => 'required|exists:segmentos,id',
+            'data_inicio' => 'required|date',
+            'data_fim' => 'required|date|after_or_equal:data_inicio',
+            'alimentos' => 'required|array',
+            'alimentos.*' => 'exists:alimentos,id',
+            'ativo' => 'sometimes|boolean',
+            'padrao' => 'sometimes|boolean'
         ]);
 
-        Cardapio::create($request->all());
+        // Se for marcado como padrão, desmarca outros do mesmo segmento
+        if ($request->padrao) {
+            Cardapio::where('segmento_id', $request->segmento_id)
+                  ->update(['padrao' => false]);
+        }
+
+        $cardapio = Cardapio::create([
+            'nome' => $request->nome,
+            'escola_id' => $request->escola_id,
+            'segmento_id' => $request->segmento_id,
+            'data_inicio' => $request->data_inicio,
+            'data_fim' => $request->data_fim,
+            'observacoes' => $request->observacoes,
+            'ativo' => $request->ativo ?? false,
+            'padrao' => $request->padrao ?? false
+        ]);
+
+        // Sincronizar alimentos com dias e refeições
+        $alimentosSync = [];
+        foreach ($request->alimentos as $alimentoId) {
+            $alimentosSync[$alimentoId] = [
+                'dia_semana' => $request->input("dia_semana_$alimentoId"),
+                'refeicao' => $request->input("refeicao_$alimentoId")
+            ];
+        }
+
+        $cardapio->alimentos()->sync($alimentosSync);
 
         return redirect()->route('cardapios.index')
                          ->with('success', 'Cardápio criado com sucesso!');
     }
 
-    // Exibe o formulário de edição de cardápio
-    public function edit($id)
+    public function show(Cardapio $cardapio)
     {
-        $cardapio = Cardapio::find($id);
-        $alimentos = Alimento::all();
-        $escolas = Escola::all();
-        $chamadas = Chamada::all();
-        return view('cardapios.edit', compact('cardapio', 'alimentos', 'escolas', 'chamadas'));
+        return view('cardapios.show', compact('cardapio'));
     }
 
-    // Atualiza um cardápio existente
-    public function update(Request $request, $id)
+    public function edit(Cardapio $cardapio)
+    {
+        $alimentos = Alimento::where('ativo', true)->orderBy('nome')->get();
+        $escolas = Escola::orderBy('nome')->get();
+        $segmentos = Segmento::ativo()->get();
+        
+        return view('cardapios.edit', compact('cardapio', 'alimentos', 'escolas', 'segmentos'));
+    }
+
+    public function update(Request $request, Cardapio $cardapio)
     {
         $request->validate([
             'nome' => 'required|string|max:255',
-            'quantidade_porcao_gr' => 'nullable|numeric',
-            'quantidade_kg' => 'nullable|numeric',
-            'dias_servido' => 'nullable|numeric',
-            'chamada_id' => 'nullable|exists:chamadas,id',
-            'alimento_id' => 'nullable|exists:alimentos,id',
-            'escola_id' => 'nullable|exists:escolas,id',
+            'escola_id' => 'required|exists:escolas,id',
+            'segmento_id' => 'required|exists:segmentos,id',
+            'data_inicio' => 'required|date',
+            'data_fim' => 'required|date|after_or_equal:data_inicio',
+            'alimentos' => 'required|array',
+            'alimentos.*' => 'exists:alimentos,id',
+            'ativo' => 'sometimes|boolean',
+            'padrao' => 'sometimes|boolean'
         ]);
 
-        $cardapio = Cardapio::find($id);
-        $cardapio->update($request->all());
+        // Se for marcado como padrão, desmarca outros do mesmo segmento
+        if ($request->padrao) {
+            Cardapio::where('segmento_id', $request->segmento_id)
+                  ->where('id', '!=', $cardapio->id)
+                  ->update(['padrao' => false]);
+        }
+
+        $cardapio->update([
+            'nome' => $request->nome,
+            'escola_id' => $request->escola_id,
+            'segmento_id' => $request->segmento_id,
+            'data_inicio' => $request->data_inicio,
+            'data_fim' => $request->data_fim,
+            'observacoes' => $request->observacoes,
+            'ativo' => $request->ativo ?? false,
+            'padrao' => $request->padrao ?? false
+        ]);
+
+        // Sincronizar alimentos com dias e refeições
+        $alimentosSync = [];
+        foreach ($request->alimentos as $alimentoId) {
+            $alimentosSync[$alimentoId] = [
+                'dia_semana' => $request->input("dia_semana_$alimentoId"),
+                'refeicao' => $request->input("refeicao_$alimentoId")
+            ];
+        }
+
+        $cardapio->alimentos()->sync($alimentosSync);
 
         return redirect()->route('cardapios.index')
                          ->with('success', 'Cardápio atualizado com sucesso!');
     }
 
-    // Exclui um cardápio
-    public function destroy($id)
+    public function destroy(Cardapio $cardapio)
     {
-        $cardapio = Cardapio::find($id);
         $cardapio->delete();
-
         return redirect()->route('cardapios.index')
                          ->with('success', 'Cardápio excluído com sucesso!');
+    }
+
+    public function toggleStatus(Cardapio $cardapio)
+    {
+        $cardapio->update(['ativo' => !$cardapio->ativo]);
+        return response()->json(['success' => true, 'ativo' => $cardapio->ativo]);
+    }
+
+    public function togglePadrao(Cardapio $cardapio)
+    {
+        // Se estiver marcando como padrão, desmarca outros do mesmo segmento
+        if (!$cardapio->padrao) {
+            Cardapio::where('segmento_id', $cardapio->segmento_id)
+                  ->where('id', '!=', $cardapio->id)
+                  ->update(['padrao' => false]);
+        }
+
+        $cardapio->update(['padrao' => !$cardapio->padrao]);
+        return response()->json(['success' => true, 'padrao' => $cardapio->padrao]);
+    }
+
+    public function generatePdf(Cardapio $cardapio)
+    {
+        $pdf = PDF::loadView('cardapios.pdf', compact('cardapio'))
+                 ->setPaper('a4', 'landscape');
+        
+        return $pdf->download("cardapio_{$cardapio->escola->nome}_{$cardapio->segmento->nome}.pdf");
+    }
+
+    public function generateAllPdfs(Request $request)
+    {
+        $request->validate([
+            'escola_id' => 'required|exists:escolas,id',
+            'segmento_id' => 'required|exists:segmentos,id'
+        ]);
+
+        $cardapios = Cardapio::where('escola_id', $request->escola_id)
+                            ->where('segmento_id', $request->segmento_id)
+                            ->with(['alimentos', 'escola', 'segmento'])
+                            ->get();
+
+        if ($cardapios->isEmpty()) {
+            return back()->with('error', 'Nenhum cardápio encontrado para os critérios selecionados.');
+        }
+
+        $pdf = PDF::loadView('cardapios.all_pdfs', compact('cardapios'))
+                 ->setPaper('a4', 'landscape');
+        
+        return $pdf->download("cardapios_{$cardapios->first()->escola->nome}_{$cardapios->first()->segmento->nome}.pdf");
     }
 }

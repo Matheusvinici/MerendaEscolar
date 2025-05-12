@@ -1,44 +1,55 @@
 <?php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Pedido extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $fillable = [
         'escola_id',
-        'proposta_id',
-        'alimento_id',
-        'quantidade_pedida',
-        'quantidade_entregue',
-        'data_pedido',
-        'data_entrega',
+        'cardapio_id',
+        'user_id',
+        'data_inicio',
+        'data_fim',
+        'status',
+        'lote_id',
+        'observacoes'
     ];
 
-    /**
-     * Relacionamento com a tabela `escolas`.
-     */
+    protected $casts = [
+        'data_inicio' => 'date',
+        'data_fim' => 'date'
+    ];
+
     public function escola()
     {
         return $this->belongsTo(Escola::class);
     }
 
-    /**
-     * Relacionamento com a tabela `propostas`.
-     */
-    public function proposta()
+    public function cardapio()
     {
-        return $this->belongsTo(Proposta::class);
+        return $this->belongsTo(Cardapio::class)->withDefault([
+            'nome' => 'Sem cardápio associado'
+        ]);
     }
 
-    /**
-     * Relacionamento com a tabela `alimentos`.
-     */
-    public function alimento()
+    public function usuario()
     {
-        return $this->belongsTo(Alimento::class);
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function itens()
+    {
+        return $this->hasMany(ItemPedido::class);
+    }
+
+    public function calcularTotal()
+    {
+        return $this->itens->sum('valor_total');
     }
 }

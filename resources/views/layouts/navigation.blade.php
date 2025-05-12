@@ -34,13 +34,35 @@
             </a>
         </li>
 
-        <!-- Opção: Escolas - Acesso para todos -->
-        <li class="nav-item">
-            <a href="{{ route('escolas.index') }}" class="nav-link text-white">
-                <i class="nav-icon fas fa-school text-white"></i>
-                <p>{{ __('Escolas') }}</p>
+                    <li class="nav-header text-uppercase text-white">{{ __('Merenda Escolar') }}</li>
+
+            <li class="nav-item">
+                <a href="{{ route('cardapios.index') }}" class="nav-link text-white">
+                    <i class="nav-icon fas fa-utensils text-white"></i>
+                    <p>{{ __('Cardápios') }}</p>
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a href="{{ route('alunos.index') }}" class="nav-link text-white">
+                    <i class="nav-icon fas fa-school text-white"></i>
+                    <p>{{ __('Alunos') }}</p>
+                </a>
+            </li>
+
+                    <li class="nav-item">
+            <a href="{{ route('pedidos.lote.index') }}" class="nav-link text-white">
+                <i class="nav-icon fas fa-clipboard-list text-white"></i>
+                <p>{{ __('Pedidos Quinzenais') }}</p> <!-- Ou "Programação de Merenda" -->
             </a>
         </li>
+        <li class="nav-item">
+            <a href="{{ route('recebimentos.index') }}" class="nav-link text-white">
+                <i class="nav-icon fas fa-clipboard-list text-white"></i>
+                <p>{{ __('Recebimento e Atesto de Qualidade') }}</p> <!-- Ou "Programação de Merenda" -->
+            </a>
+        </li>
+        
 
         <!-- Opção: Alimentos - Acesso para todos -->
         <li class="nav-item">
@@ -87,14 +109,6 @@
             <a href="{{ route('avaliacoes.index') }}" class="nav-link text-white">
                 <i class="nav-icon fas fa-clipboard-check text-white"></i>
                 <p>{{ __('Avaliação das Propostas de Venda') }}</p>
-            </a>
-        </li>
-
-           <!-- Opção: Avaliação das Propostas de Venda -->
-           <li class="nav-item">
-            <a href="{{ route('pedidos.index') }}" class="nav-link text-white">
-                <i class="nav-icon fas fa-clipboard-check text-white"></i>
-                <p>{{ __('Pedidos de Entrega') }}</p>
             </a>
         </li>
 

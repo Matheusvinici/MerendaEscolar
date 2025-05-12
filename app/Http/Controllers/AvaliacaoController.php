@@ -141,6 +141,7 @@ class AvaliacaoController extends Controller
         return redirect()->route('avaliacoes.index')->with('success', 'Avaliação registrada com sucesso!');
     }
 
+
     /**
      * Distribui as propostas aprovadas por região.
      */
