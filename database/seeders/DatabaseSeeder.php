@@ -27,6 +27,7 @@ class DatabaseSeeder extends Seeder
 
             AlimentoSeeder::class,
             CardapioSeeder::class,
+            AdminAssignAllPermissions::class,
         ]);
     }
 }
